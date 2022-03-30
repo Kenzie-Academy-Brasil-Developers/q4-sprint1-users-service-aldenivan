@@ -100,20 +100,20 @@ app.post('/signup', validateShapes(createUserShape), async (req, res) => {
 });
 
 app.post('/login', validateShapes(loginShape), async (req, res) => {
-  const { email } = req.validated;
-  const user = USERS.filter((_) => email === _.email);
+  const { email, password } = req.validated;
+  const user = USERS.find((_) => _.email === email);
 
   if (!user) {
-    return res.status(400).json({ error: 'Invalidated credentials' });
+    return res.status(400).json({ error: 'Invalid credentials' });
   }
 
-  // const hasedPassword = await bcrypt.compare(req.body.password, user.password);
+  const hasedPassword = await bcrypt.compare(req.body.password, user.password);
 
-  // if (!hasedPassword) {
-  //   return res.status(400).json({ error: 'Invalidated credentials' });
-  // }
+  if (!hasedPassword) {
+    return res.status(400).json({ error: 'Invalid credentials' });
+  }
 
-  const token = jsonwebtoken.sign({ email }, config.secretKey, {
+  const token = jsonwebtoken.sign({ email, password }, config.secretKey, {
     expiresIn: config.expiresIn,
   });
 
