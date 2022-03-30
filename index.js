@@ -130,7 +130,7 @@ app.put(
     const { password } = req.body;
     const { user } = req;
 
-    user.password = password;
+    user.password = bcrypt.hashSync(password, 10);
 
     return res.status(204).json(user);
   }
